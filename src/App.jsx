@@ -90,18 +90,18 @@ export default function App() {
 
   return (
     <div className="app">
-      <header className="station-banner">
+      <header className="station-banner no-print">
         <h1>Sai Hanuma Filling Station</h1>
         <p>DAILY ACCOUNTING DAY-SHEET</p>
       </header>
 
       <div className="app-container">
-        <div className="sticky-header">
+        <div className="sticky-header no-print">
           <input type="date" className="date-input" value={date} onChange={e => setDate(e.target.value)} />
           <div className="status-label">OFFICE COPY</div>
         </div>
 
-        <div className="tab-bar">
+        <div className="tab-bar no-print">
           {['sales', 'cash', 'expenses', 'report'].map(t => (
             <button key={t} className={`tab-btn ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>
               {t.toUpperCase()}
@@ -200,7 +200,7 @@ export default function App() {
 
         {tab === 'report' && (
           <div className="card report-view">
-            <h2 className="report-title">Day Sheet Audit Report</h2>
+            <h2 className="report-title no-print">Day Sheet Audit Report</h2>
             
             <div className="report-section">
               <h3>⛽ Meter Sales (Opening - Closing)</h3>
@@ -213,7 +213,11 @@ export default function App() {
                       <span>{money(p.amt)}</span>
                     </div>
                   ))}
-                  <div className="item-subtotal">Total {f.type}: {f.totalLiters.toFixed(2)} L | {money(f.totalAmt)}</div>
+                  {/* Fixed Spacing by wrapping items in span */}
+                  <div className="item-subtotal">
+                    <span>Total {f.type}: {f.totalLiters.toFixed(2)} L</span>
+                    <span>{money(f.totalAmt)}</span>
+                  </div>
                 </div>
               ))}
               <div className="report-item"><span>Miscellaneous (2T Oil & Kata)</span><span>{money(n(entry.twoT) + n(entry.kata))}</span></div>
@@ -248,10 +252,23 @@ export default function App() {
               <div className="amount">{money(calc.bankable)}</div>
             </div>
 
-            <button className="fab-share" onClick={() => {
-                const txt = `*SAI HANUMA FILLING STATION*\nDate: ${date}\n---\nP: ${calc.fuelDetails[0].totalLiters.toFixed(2)}L\nD: ${calc.fuelDetails[1].totalLiters.toFixed(2)}L\nSales: ${money(calc.totalExpected)}\nShort/Excess: ${money(calc.gap)}\nNet Cash: ${money(calc.bankable)}`;
-                window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
-            }}>📤 Send WhatsApp Day-Sheet</button>
+            {/* Replaced absolute floating button with a structured actions section */}
+            <div className="action-buttons no-print">
+               <button className="btn-pdf" onClick={() => setTimeout(() => window.print(), 500)}>📄 Download PDF</button>
+               <button className="btn-whatsapp" onClick={() => {
+                  const txt = `*⛽ SAI HANUMA FILLING STATION*\n*Day Sheet: ${date}*\n\n` +
+                    `*--- METER SALES ---*\n` +
+                    `Petrol: ${calc.fuelDetails[0].totalLiters.toFixed(2)} L\n` +
+                    `Diesel: ${calc.fuelDetails[1].totalLiters.toFixed(2)} L\n` +
+                    `*Total Sales: ${money(calc.totalExpected)}*\n\n` +
+                    `*--- COLLECTIONS ---*\n` +
+                    `Cash: ${money(calc.cashTotal)}\n` +
+                    `Digital/Other: ${money(calc.digitalTotal)}\n` +
+                    `*Gap:* ${calc.gap >= 0 ? 'Excess' : 'Shortage'} ${money(calc.gap)}\n\n` +
+                    `*🏦 NET HANDOVER: ${money(calc.bankable)}*`;
+                  window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
+               }}>📤 Send WhatsApp Day-Sheet</button>
+            </div>
           </div>
         )}
       </div>
