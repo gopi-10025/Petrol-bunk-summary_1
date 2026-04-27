@@ -1,7 +1,9 @@
 body {
-  margin7fb;  margin: 0;
+  margin: 0;
+  background: #f6f7fb;
   font-family: "Segoe UI", system-ui, Arial, sans-serif;
 }
+
 
 .app {
   max-width: 960px;
