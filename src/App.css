@@ -8,7 +8,7 @@
 }
 
 body { margin: 0; background-color: var(--bg-gray); font-family: -apple-system, sans-serif; color: var(--text-dark); }
-.app-container { max-width: 500px; margin: 0 auto; padding: 16px; padding-bottom: 120px; min-height: 100vh; }
+.app-container { max-width: 500px; margin: 0 auto; padding: 16px; padding-bottom: 50px; min-height: 100vh; }
 
 /* Banner */
 .station-banner { background: var(--station-blue); color: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--station-amber); }
@@ -55,7 +55,8 @@ input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6p
 .report-item-box { background: #f8fafc; border-radius: 8px; padding: 10px; margin-bottom: 10px; border: 1px solid #eef2f6; }
 .item-head { display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; margin-bottom: 5px; font-size: 0.85rem; }
 .item-pump-line { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 3px 0; color: #475569; }
-.item-subtotal { text-align: right; font-weight: bold; font-size: 0.85rem; color: var(--station-blue); margin-top: 5px; padding-top: 5px; border-top: 1px dashed #e2e8f0; }
+/* Modified .item-subtotal to flex properly and space out text and value */
+.item-subtotal { display: flex; justify-content: space-between; font-weight: bold; font-size: 0.85rem; color: var(--station-blue); margin-top: 5px; padding-top: 5px; border-top: 1px dashed #e2e8f0; }
 
 .report-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
 .report-item.sub { font-size: 0.8rem; color: #64748b; padding-left: 10px; }
@@ -69,4 +70,14 @@ input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6p
 .final-box label { color: rgba(255,255,255,0.7); font-size: 0.7rem; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
 .final-box .amount { font-size: 1.8rem; font-weight: 900; margin-top: 5px; }
 
-.fab-share { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #25d366; color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; font-size: 1rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2); cursor: pointer; }
+/* New action buttons styling (replaced absolute fab button) */
+.action-buttons { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
+.btn-pdf { background: #475569; color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; }
+.btn-whatsapp { background: #25d366; color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 8px rgba(37, 211, 102, 0.3); }
+
+/* Print configuration to clean up PDF output */
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+  .card { border: 1px solid #ccc; box-shadow: none; break-inside: avoid; }
+}
