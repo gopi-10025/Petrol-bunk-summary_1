@@ -1,0 +1,105 @@
+body {
+  margin7fb;  margin: 0;
+  font-family: "Segoe UI", system-ui, Arial, sans-serif;
+}
+
+.app {
+  max-width: 960px;
+  margin: auto;
+  padding: 16px;
+}
+
+.tabs button {
+  margin-right: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+.tabs .active {
+  background: #111;
+  color: #fff;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 14px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.pump-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 0.8fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.cash-line {
+  display: grid;
+  grid-template-columns: 70px 20px 1fr 140px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.cash-line .count {
+  border: none;
+  border-bottom: 1px solid #aaa;
+  border-radius: 0;
+  padding: 6px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.expense-row {
+  display: grid;
+  grid-template-columns: 1fr 120px 40px;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+input {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+.btn.danger {
+  border-color: red;
+  color: red;
+}
+
+.total {
+  margin-top: 14px;
+  font-weight: bold;
+}
+
+.ok { color: green; }
+.bad { color: red; }
+
+@media (max-width: 640px) {
+  .pump-row,
+  .cash-line,
+  .expense-row,
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+}
