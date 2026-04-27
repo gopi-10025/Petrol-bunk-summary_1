@@ -8,7 +8,7 @@
 }
 
 body { margin: 0; background-color: var(--bg-gray); font-family: -apple-system, sans-serif; color: var(--text-dark); }
-.app-container { max-width: 500px; margin: 0 auto; padding: 16px; padding-bottom: 120px; }
+.app-container { max-width: 500px; margin: 0 auto; padding: 16px; padding-bottom: 120px; min-height: 100vh; }
 
 /* Banner */
 .station-banner { background: var(--station-blue); color: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--station-amber); }
