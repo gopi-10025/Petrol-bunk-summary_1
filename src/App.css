@@ -7,54 +7,66 @@
   --border: #cbd5e1;
 }
 
-body { margin: 0; background-color: var(--bg-gray); font-family: sans-serif; color: var(--text-dark); }
+body { margin: 0; background-color: var(--bg-gray); font-family: -apple-system, sans-serif; color: var(--text-dark); }
 .app-container { max-width: 500px; margin: 0 auto; padding: 16px; padding-bottom: 120px; }
 
-/* Banner & Header */
+/* Banner */
 .station-banner { background: var(--station-blue); color: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--station-amber); }
-.station-banner h1 { margin: 0; font-size: 1.2rem; }
-.sticky-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px; margin-top: -10px; border-radius: 0 0 10px 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.date-input { border: 1px solid #ddd; padding: 5px; border-radius: 5px; font-weight: bold; }
-.status-label { font-size: 0.7rem; font-weight: bold; color: #64748b; }
+.station-banner h1 { margin: 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+.station-banner p { margin: 5px 0 0; font-size: 0.75rem; opacity: 0.8; }
+
+.sticky-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 12px; margin-top: -12px; border-radius: 0 0 12px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.date-input { border: 1px solid #ddd; padding: 6px; border-radius: 6px; font-weight: bold; font-family: inherit; }
+.status-label { font-size: 0.7rem; font-weight: 800; color: #94a3b8; }
 
 /* Tabs */
 .tab-bar { display: flex; background: #e2e8f0; padding: 4px; border-radius: 8px; margin: 15px 0; }
-.tab-btn { flex: 1; padding: 10px; border: none; background: transparent; cursor: pointer; font-weight: bold; color: #64748b; font-size: 0.75rem; }
+.tab-btn { flex: 1; padding: 10px; border: none; background: transparent; cursor: pointer; font-weight: bold; color: #64748b; font-size: 0.7rem; }
 .tab-btn.active { background: white; color: var(--station-blue); border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-/* Sales UI */
+/* Cards & Forms */
 .card { background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-.card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.rate-box label { display: block; font-size: 0.7rem; color: #64748b; }
-.rate-box input { width: 80px; font-weight: bold; border-color: var(--station-amber); }
+.card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+.card h2 { font-size: 1rem; margin: 0; color: var(--station-blue); }
 
-.pump-group { background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--station-blue); }
-.pump-label-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; }
-.input-row { display: flex; gap: 8px; }
-.input-row input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; }
+.rate-box label { display: block; font-size: 0.65rem; color: #64748b; font-weight: bold; }
+.rate-box input { width: 80px; font-weight: bold; border-color: var(--station-amber); text-align: right; }
 
-.btn-add-pump { width: 100%; padding: 10px; background: transparent; border: 1px dashed var(--station-blue); color: var(--station-blue); font-weight: bold; border-radius: 8px; cursor: pointer; }
+.pump-group { background: #f8fafc; padding: 12px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #eef2f6; }
+.pump-label-row { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
+.btn-del { background: #fee2e2; color: #ef4444; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer; }
 
-/* Cash UI */
-.cash-row-ui { display: grid; grid-template-columns: 60px 1fr 100px; align-items: center; gap: 10px; margin-bottom: 10px; }
-.cash-row-ui .denom { font-weight: bold; }
-.cash-row-ui .val { text-align: right; font-weight: bold; }
-.payment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
+.input-row { display: flex; gap: 10px; }
+.input-row > div { flex: 1; }
+.input-row label { display: block; font-size: 0.65rem; color: #64748b; margin-bottom: 4px; font-weight: bold; }
+input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; box-sizing: border-box; }
 
-/* Report UI */
-.report-title { text-align: center; color: var(--station-blue); }
-.report-section { margin-bottom: 25px; }
-.report-section h3 { font-size: 0.9rem; border-bottom: 1px solid #eee; padding-bottom: 5px; color: #475569; }
-.report-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f8fafc; }
-.item-sub { font-size: 0.75rem; color: #94a3b8; }
-.report-total { display: flex; justify-content: space-between; font-weight: bold; padding-top: 10px; font-size: 1.1rem; }
+.pump-calc-row { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; }
 
-.gap-strip { margin-top: 10px; padding: 8px; text-align: center; border-radius: 6px; font-weight: bold; font-size: 0.9rem; }
-.excess { background: #dcfce7; color: #16a34a; }
-.shortage { background: #fee2e2; color: #dc2626; }
+.btn-add-pump { width: 100%; padding: 12px; background: #eff6ff; border: 1px dashed var(--station-blue); color: var(--station-blue); font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 5px; }
 
-.final-box { background: var(--station-blue); color: white; padding: 15px; border-radius: 10px; text-align: center; margin-top: 20px; }
-.final-box label { color: rgba(255,255,255,0.7); font-size: 0.8rem; text-transform: uppercase; }
-.final-box .amount { font-size: 1.6rem; font-weight: 800; }
+/* Cash/Collection UI */
+.cash-row-ui { display: grid; grid-template-columns: 60px 1fr 110px; align-items: center; gap: 10px; margin-bottom: 8px; }
+.cash-row-ui .denom { font-weight: bold; color: #475569; }
+.cash-row-ui .val { text-align: right; font-weight: bold; color: var(--text-dark); }
+.payment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 2px solid #f1f5f9; }
 
-.fab-share { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #25d366; color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; }
+/* Report Styles */
+.report-item-box { background: #f8fafc; border-radius: 8px; padding: 10px; margin-bottom: 10px; border: 1px solid #eef2f6; }
+.item-head { display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; margin-bottom: 5px; font-size: 0.85rem; }
+.item-pump-line { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 3px 0; color: #475569; }
+.item-subtotal { text-align: right; font-weight: bold; font-size: 0.85rem; color: var(--station-blue); margin-top: 5px; padding-top: 5px; border-top: 1px dashed #e2e8f0; }
+
+.report-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+.report-item.sub { font-size: 0.8rem; color: #64748b; padding-left: 10px; }
+.report-total { display: flex; justify-content: space-between; font-weight: bold; padding-top: 12px; font-size: 1rem; color: var(--text-dark); }
+
+.gap-strip { margin-top: 12px; padding: 10px; text-align: center; border-radius: 8px; font-weight: 800; }
+.excess { background: #dcfce7; color: #15803d; }
+.shortage { background: #fee2e2; color: #b91c1c; }
+
+.final-box { background: var(--station-blue); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-top: 25px; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2); }
+.final-box label { color: rgba(255,255,255,0.7); font-size: 0.7rem; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+.final-box .amount { font-size: 1.8rem; font-weight: 900; margin-top: 5px; }
+
+.fab-share { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #25d366; color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; font-size: 1rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2); cursor: pointer; }
