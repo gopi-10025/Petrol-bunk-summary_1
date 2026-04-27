@@ -1,190 +1,62 @@
 :root {
   --station-blue: #1e3a8a;
   --station-amber: #f59e0b;
-  --bg-gray: #f8fafc;
+  --bg-gray: #f1f5f9;
   --card-white: #ffffff;
   --text-dark: #0f172a;
   --border: #cbd5e1;
 }
 
-body { 
-  margin: 0; 
-  background-color: var(--bg-gray); 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  color: var(--text-dark);
-}
+body { margin: 0; background-color: var(--bg-gray); font-family: sans-serif; color: var(--text-dark); }
+.app-container { max-width: 500px; margin: 0 auto; padding: 15px; padding-bottom: 50px; }
 
-/* Header Banner */
-.station-banner {
-  background: var(--station-blue);
-  color: white;
-  padding: 25px 15px;
-  text-align: center;
-  border-bottom: 5px solid var(--station-amber);
-}
+.station-banner { background: var(--station-blue); color: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--station-amber); }
+.station-banner h1 { margin: 0; font-size: 1.1rem; }
 
-.station-banner h1 { margin: 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
-.station-banner p { margin: 5px 0 0; font-size: 0.8rem; opacity: 0.8; }
+.sticky-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 12px; margin-top: -10px; border-radius: 0 0 12px 12px; }
+.date-input { border: 1px solid #ddd; padding: 6px; border-radius: 6px; font-weight: bold; }
 
-.app-container {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 15px;
-  padding-bottom: 120px;
-}
+.tab-bar { display: flex; background: #e2e8f0; padding: 4px; border-radius: 8px; margin: 15px 0; }
+.tab-btn { flex: 1; padding: 10px; border: none; background: transparent; cursor: pointer; font-weight: bold; color: #64748b; font-size: 0.75rem; }
+.tab-btn.active { background: white; color: var(--station-blue); border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-/* Navigation & Date */
-.sticky-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  padding: 12px;
-  margin-top: -10px;
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-}
+.card { background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
+.card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 
-.date-input { border: 1px solid #ddd; padding: 8px; border-radius: 6px; font-weight: bold; }
-.status-label { font-size: 0.7rem; font-weight: 800; color: #94a3b8; letter-spacing: 1px; }
+.rate-box label { display: block; font-size: 0.65rem; color: #64748b; font-weight: bold; }
+.rate-box input { width: 85px; font-weight: bold; border: 1px solid var(--station-amber); padding: 5px; border-radius: 4px; }
 
-.tab-bar {
-  display: flex;
-  background: #e2e8f0;
-  padding: 4px;
-  border-radius: 10px;
-  margin: 15px 0;
-}
+.pump-group { background: #f8fafc; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #eef2f6; }
+.pump-label-row { display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center; }
+.btn-del { background: #fee2e2; color: #ef4444; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
 
-.tab-btn {
-  flex: 1;
-  padding: 12px 5px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-weight: bold;
-  color: #64748b;
-  font-size: 0.75rem;
-  transition: 0.2s;
-}
+.input-row { display: flex; gap: 8px; }
+.input-row > div { flex: 1; }
+.input-row label { display: block; font-size: 0.6rem; color: #64748b; margin-bottom: 2px; }
+input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; box-sizing: border-box; }
 
-.tab-btn.active {
-  background: white;
-  color: var(--station-blue);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+.pump-calc-row { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 5px; border-top: 1px dashed #ccc; font-size: 0.8rem; font-weight: bold; }
 
-/* Cards & Inputs */
-.card {
-  background: white;
-  padding: 18px;
-  border-radius: 15px;
-  border: 1px solid var(--border);
-  margin-bottom: 15px;
-}
+.btn-add-pump { width: 100%; padding: 10px; background: #eff6ff; border: 1px dashed var(--station-blue); color: var(--station-blue); font-weight: bold; border-radius: 8px; cursor: pointer; }
 
-.card-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  border-bottom: 1px solid #f1f5f9;
-  padding-bottom: 10px;
-}
+.cash-row-ui { display: grid; grid-template-columns: 60px 1fr 100px; align-items: center; gap: 10px; margin-bottom: 8px; }
+.denom { font-weight: bold; }
+.val { text-align: right; font-weight: bold; }
 
-.card h2 { font-size: 1.1rem; color: var(--station-blue); margin: 0; }
-.rate-input { width: 90px; padding: 8px; font-weight: bold; border: 2px solid var(--station-amber); border-radius: 6px; text-align: center; }
+.payment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
 
-.pump-group {
-  background: #f8fafc;
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  border: 1px solid #eef2f6;
-}
+.report-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+.report-total { display: flex; justify-content: space-between; font-weight: bold; padding: 12px 0; font-size: 1rem; border-top: 2px solid #eee; }
 
-.pump-label-row { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
-.btn-del { background: #fee2e2; color: #ef4444; border: none; padding: 5px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; cursor: pointer; }
-
-.input-row { display: flex; gap: 10px; }
-input[type="number"] {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-.pump-calc-row {
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px dashed #cbd5e1;
-  font-size: 0.85rem;
-  font-weight: bold;
-  color: var(--station-blue);
-  display: flex;
-  justify-content: space-between;
-}
-
-.btn-add-pump {
-  width: 100%;
-  padding: 12px;
-  background: #eff6ff;
-  border: 1px dashed var(--station-blue);
-  color: var(--station-blue);
-  font-weight: bold;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-/* Report Styling */
-.report-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.report-total {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 800;
-  padding: 15px 0;
-  font-size: 1.1rem;
-  color: #000;
-}
-
-.gap-strip {
-  padding: 12px;
-  text-align: center;
-  border-radius: 8px;
-  font-weight: bold;
-  margin: 10px 0;
-}
-
+.gap-strip { padding: 10px; text-align: center; border-radius: 6px; font-weight: bold; margin-top: 10px; }
 .excess { background: #dcfce7; color: #166534; }
 .shortage { background: #fee2e2; color: #991b1b; }
 
-.final-box {
-  background: var(--station-blue);
-  color: white;
-  padding: 20px;
-  border-radius: 15px;
-  text-align: center;
-  margin-top: 20px;
-}
+.final-box { background: var(--station-blue); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-top: 20px; }
+.final-box .amount { font-size: 1.8rem; font-weight: bold; margin-top: 5px; }
 
-.final-box label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px; }
-.final-box .amount { font-size: 1.8rem; font-weight: 900; margin-top: 5px; }
-
-/* Buttons & Print */
 .action-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-.btn-pdf { background: #475569; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+.btn-pdf { background: #475569; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+.btn-whatsapp { background: #25d366; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-@media print {
-  .no-print { display: none !important; }
-  body { background: white; }
-  .card { border: 1px solid black; }
-  .app-container { max-width: 100%; }
-}
+@media print { .no-print { display: none !important; } }
