@@ -33,7 +33,7 @@ export default function App() {
     
     const fuelDetails = entry.fuels.map(f => {
       const pumps = f.pumps.map(p => {
-        // Logic: Opening - Closing = Liters Sold
+        // UPDATED LOGIC: Opening - Closing for Countdown Meters
         const liters = Math.max(0, n(p.opening) - n(p.closing));
         return { ...p, liters, amt: liters * n(f.rate) };
       });
@@ -59,9 +59,12 @@ export default function App() {
 
   const updatePump = (fi, pi, key, val) => {
     setEntry(prev => {
-      const fuels = [...prev.fuels];
-      fuels[fi].pumps[pi][key] = val;
-      return { ...prev, fuels: [...fuels] };
+      const fuels = prev.fuels.map((f, i) => {
+        if (i !== fi) return f;
+        const pumps = f.pumps.map((p, j) => j === pi ? { ...p, [key]: val } : p);
+        return { ...f, pumps };
+      });
+      return { ...prev, fuels };
     });
   };
 
@@ -70,8 +73,8 @@ export default function App() {
       const fuels = [...prev.fuels];
       const prefix = fuels[fi].type[0];
       const count = fuels[fi].pumps.length + 1;
-      fuels[fi].pumps.push({ id: id(), name: `${prefix}${count}`, opening: '', closing: '' });
-      return { ...prev, fuels: [...fuels] };
+      fuels[fi].pumps = [...fuels[fi].pumps, { id: id(), name: `${prefix}${count}`, opening: '', closing: '' }];
+      return { ...prev, fuels };
     });
   };
 
@@ -79,31 +82,26 @@ export default function App() {
     setEntry(prev => {
       const fuels = [...prev.fuels];
       fuels[fi].pumps = fuels[fi].pumps.filter((_, idx) => idx !== pi);
-      return { ...prev, fuels: [...fuels] };
+      return { ...prev, fuels };
     });
-  };
-
-  const shareWhatsApp = () => {
-    const txt = `*SAI HANUMA FILLING STATION*\nDate: ${date}\n---\nP: ${calc.fuelDetails[0].totalLiters.toFixed(2)}L\nD: ${calc.fuelDetails[1].totalLiters.toFixed(2)}L\nSales: ${money(calc.totalExpected)}\nNet Handover: ${money(calc.bankable)}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
   };
 
   if (!entry) return null;
 
   return (
     <div className="app">
-      <header className="station-banner no-print">
+      <header className="station-banner">
         <h1>Sai Hanuma Filling Station</h1>
         <p>DAILY ACCOUNTING DAY-SHEET</p>
       </header>
 
       <div className="app-container">
-        <div className="sticky-header no-print">
+        <div className="sticky-header">
           <input type="date" className="date-input" value={date} onChange={e => setDate(e.target.value)} />
           <div className="status-label">OFFICE COPY</div>
         </div>
 
-        <div className="tab-bar no-print">
+        <div className="tab-bar">
           {['sales', 'cash', 'expenses', 'report'].map(t => (
             <button key={t} className={`tab-btn ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>
               {t.toUpperCase()}
@@ -135,11 +133,11 @@ export default function App() {
                         {f.pumps.length > 1 && <button className="btn-del" onClick={() => deletePump(fi, pi)}>Delete</button>}
                       </div>
                       <div className="input-row">
-                        <div><label>Opening</label><input type="number" value={p.opening} onChange={e => updatePump(fi, pi, 'opening', e.target.value)} /></div>
-                        <div><label>Closing</label><input type="number" value={p.closing} onChange={e => updatePump(fi, pi, 'closing', e.target.value)} /></div>
+                        <div><label>Opening Meter</label><input type="number" value={p.opening} onChange={e => updatePump(fi, pi, 'opening', e.target.value)} /></div>
+                        <div><label>Closing Meter</label><input type="number" value={p.closing} onChange={e => updatePump(fi, pi, 'closing', e.target.value)} /></div>
                       </div>
                       <div className="pump-calc-row">
-                        <span>Liters: <b>{liters.toFixed(2)}</b></span>
+                        <span>Liters Sold: <b>{liters.toFixed(2)}</b></span>
                         <span>Amount: <b>{money(amt)}</b></span>
                       </div>
                     </div>
@@ -165,74 +163,95 @@ export default function App() {
             {entry.cash.map((d, i) => (
               <div key={d.v} className="cash-row-ui">
                 <span className="denom">₹{d.v}</span>
-                <input type="number" value={d.count} onChange={e => {
+                <input type="number" placeholder="Count" value={d.count} onChange={e => {
                   const nc = [...entry.cash]; nc[i].count = e.target.value; setEntry({...entry, cash: nc});
                 }} />
                 <span className="val">{money(d.v * n(d.count))}</span>
               </div>
             ))}
             <div className="payment-grid">
-               <div><label>UPI/Online</label><input type="number" value={entry.upi} onChange={e => setEntry({...entry, upi: e.target.value})}/></div>
-               <div><label>Card</label><input type="number" value={entry.card} onChange={e => setEntry({...entry, card: e.target.value})}/></div>
-               <div><label>Bank</label><input type="number" value={entry.bank} onChange={e => setEntry({...entry, bank: e.target.value})}/></div>
-               <div><label>Credit</label><input type="number" value={entry.credit} onChange={e => setEntry({...entry, credit: e.target.value})}/></div>
+               <div><label>UPI / G-Pay</label><input type="number" value={entry.upi} onChange={e => setEntry({...entry, upi: e.target.value})}/></div>
+               <div><label>Card Swipe</label><input type="number" value={entry.card} onChange={e => setEntry({...entry, card: e.target.value})}/></div>
+               <div><label>Bank Deposit</label><input type="number" value={entry.bank} onChange={e => setEntry({...entry, bank: e.target.value})}/></div>
+               <div><label>Credit/Other</label><input type="number" value={entry.credit} onChange={e => setEntry({...entry, credit: e.target.value})}/></div>
             </div>
           </div>
         )}
 
         {tab === 'expenses' && (
           <div className="card">
-            <h2>Expenses</h2>
+            <h2>Station Expenses</h2>
             {entry.expenses.map((ex, i) => (
               <div className="input-row" key={ex.id} style={{marginBottom:'10px'}}>
                 <input style={{flex:2}} placeholder="Reason" value={ex.title} onChange={e => {
                   const ne = [...entry.expenses]; ne[i].title = e.target.value; setEntry({...entry, expenses: ne});
                 }} />
-                <input style={{flex:1}} type="number" placeholder="₹" value={ex.amount} onChange={e => {
+                <input style={{flex:1}} type="number" placeholder="Amount" value={ex.amount} onChange={e => {
                   const ne = [...entry.expenses]; ne[i].amount = e.target.value; setEntry({...entry, expenses: ne});
                 }} />
                 <button className="btn-del" onClick={() => setEntry({...entry, expenses: entry.expenses.filter((_, idx) => idx !== i)})}>✕</button>
               </div>
             ))}
             <button className="btn-add-pump" onClick={() => setEntry({...entry, expenses: [...entry.expenses, {id: id(), title: '', amount: ''}]})}>
-              + Add Expense
+              + Add Expense Line
             </button>
           </div>
         )}
 
         {tab === 'report' && (
           <div className="card report-view">
-            <h2 className="report-title no-print">Final Audit Report</h2>
+            <h2 className="report-title">Day Sheet Audit Report</h2>
             
             <div className="report-section">
-              <h3>⛽ Sales Summary</h3>
+              <h3>⛽ Meter Sales (Opening - Closing)</h3>
               {calc.fuelDetails.map(f => (
-                <div key={f.type} className="report-item">
-                  <span>{f.type} ({f.totalLiters.toFixed(2)} L)</span>
-                  <span>{money(f.totalAmt)}</span>
+                <div key={f.type} className="report-item-box">
+                  <div className="item-head"><strong>{f.type}</strong> <span>Rate: ₹{f.rate}</span></div>
+                  {f.pumps.map(p => (
+                    <div key={p.id} className="item-pump-line">
+                      <span>Nozzle {p.name} ({p.liters.toFixed(2)} L)</span>
+                      <span>{money(p.amt)}</span>
+                    </div>
+                  ))}
+                  <div className="item-subtotal">Total {f.type}: {f.totalLiters.toFixed(2)} L | {money(f.totalAmt)}</div>
                 </div>
               ))}
-              <div className="report-total"><span>Total Sales</span><span>{money(calc.totalExpected)}</span></div>
+              <div className="report-item"><span>Miscellaneous (2T Oil & Kata)</span><span>{money(n(entry.twoT) + n(entry.kata))}</span></div>
+              <div className="report-total"><span>Total Expected Sales</span><span>{money(calc.totalExpected)}</span></div>
             </div>
 
             <div className="report-section">
               <h3>💰 Collection Breakdown</h3>
-              <div className="report-item"><span>Physical Cash</span><span>{money(calc.cashTotal)}</span></div>
-              <div className="report-item"><span>Digital/Other</span><span>{money(calc.digitalTotal)}</span></div>
+              <div className="report-item"><span>Total Physical Cash</span><span>{money(calc.cashTotal)}</span></div>
+              {n(entry.upi) > 0 && <div className="report-item sub"><span>└ UPI/Online</span><span>{money(entry.upi)}</span></div>}
+              {n(entry.card) > 0 && <div className="report-item sub"><span>└ Card Swipe</span><span>{money(entry.card)}</span></div>}
+              {n(entry.bank) > 0 && <div className="report-item sub"><span>└ Bank Transfer</span><span>{money(entry.bank)}</span></div>}
+              {n(entry.credit) > 0 && <div className="report-item sub"><span>└ Credit Sales</span><span>{money(entry.credit)}</span></div>}
+              <div className="report-total"><span>Total Received</span><span>{money(calc.totalReceived)}</span></div>
               <div className={`gap-strip ${calc.gap >= 0 ? 'excess' : 'shortage'}`}>
                 {calc.gap >= 0 ? 'EXCESS' : 'SHORTAGE'}: {money(calc.gap)}
               </div>
             </div>
 
+            {entry.expenses.length > 0 && (
+              <div className="report-section">
+                <h3>💸 Itemized Expenses</h3>
+                {entry.expenses.map(e => (
+                  <div key={e.id} className="report-item"><span>{e.title || 'General Expense'}</span><span style={{color:'red'}}>- {money(e.amount)}</span></div>
+                ))}
+                <div className="report-total"><span>Total Expenses</span><span>{money(calc.expTotal)}</span></div>
+              </div>
+            )}
+
             <div className="final-box">
-              <label>Net Handover Cash</label>
+              <label>Net Cash to Handover</label>
               <div className="amount">{money(calc.bankable)}</div>
             </div>
 
-            <div className="action-buttons no-print">
-               <button className="btn-pdf" onClick={() => window.print()}>📄 Download PDF</button>
-               <button className="btn-whatsapp" onClick={shareWhatsApp}>📤 WhatsApp Report</button>
-            </div>
+            <button className="fab-share" onClick={() => {
+                const txt = `*SAI HANUMA FILLING STATION*\nDate: ${date}\n---\nP: ${calc.fuelDetails[0].totalLiters.toFixed(2)}L\nD: ${calc.fuelDetails[1].totalLiters.toFixed(2)}L\nSales: ${money(calc.totalExpected)}\nShort/Excess: ${money(calc.gap)}\nNet Cash: ${money(calc.bankable)}`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
+            }}>📤 Send WhatsApp Day-Sheet</button>
           </div>
         )}
       </div>
