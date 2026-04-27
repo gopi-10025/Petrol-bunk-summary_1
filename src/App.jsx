@@ -33,7 +33,8 @@ export default function App() {
     
     const fuelDetails = entry.fuels.map(f => {
       const pumps = f.pumps.map(p => {
-        const liters = Math.max(0, n(p.closing) - n(p.opening));
+        // UPDATED LOGIC: Opening - Closing for Countdown Meters
+        const liters = Math.max(0, n(p.opening) - n(p.closing));
         return { ...p, liters, amt: liters * n(f.rate) };
       });
       const totalLiters = pumps.reduce((s, p) => s + p.liters, 0);
@@ -43,7 +44,6 @@ export default function App() {
 
     const totalMeterSales = fuelDetails.reduce((s, f) => s + f.totalAmt, 0);
     const totalExpected = totalMeterSales + n(entry.twoT) + n(entry.kata);
-    
     const cashTotal = entry.cash.reduce((s, d) => s + (d.v * n(d.count)), 0);
     const digitalTotal = n(entry.upi) + n(entry.card) + n(entry.bank) + n(entry.credit);
     const totalReceived = cashTotal + digitalTotal;
@@ -57,7 +57,6 @@ export default function App() {
     };
   }, [entry]);
 
-  // FIXED: Immutable update logic for live calculations
   const updatePump = (fi, pi, key, val) => {
     setEntry(prev => {
       const fuels = prev.fuels.map((f, i) => {
@@ -125,7 +124,7 @@ export default function App() {
                 </div>
 
                 {f.pumps.map((p, pi) => {
-                  const liters = Math.max(0, n(p.closing) - n(p.opening));
+                  const liters = Math.max(0, n(p.opening) - n(p.closing));
                   const amt = liters * n(f.rate);
                   return (
                     <div className="pump-group" key={p.id}>
@@ -134,11 +133,11 @@ export default function App() {
                         {f.pumps.length > 1 && <button className="btn-del" onClick={() => deletePump(fi, pi)}>Delete</button>}
                       </div>
                       <div className="input-row">
-                        <div><label>Opening</label><input type="number" value={p.opening} onChange={e => updatePump(fi, pi, 'opening', e.target.value)} /></div>
-                        <div><label>Closing</label><input type="number" value={p.closing} onChange={e => updatePump(fi, pi, 'closing', e.target.value)} /></div>
+                        <div><label>Opening Meter</label><input type="number" value={p.opening} onChange={e => updatePump(fi, pi, 'opening', e.target.value)} /></div>
+                        <div><label>Closing Meter</label><input type="number" value={p.closing} onChange={e => updatePump(fi, pi, 'closing', e.target.value)} /></div>
                       </div>
                       <div className="pump-calc-row">
-                        <span>Liters: <b>{liters.toFixed(2)}</b></span>
+                        <span>Liters Sold: <b>{liters.toFixed(2)}</b></span>
                         <span>Amount: <b>{money(amt)}</b></span>
                       </div>
                     </div>
@@ -184,7 +183,7 @@ export default function App() {
             <h2>Station Expenses</h2>
             {entry.expenses.map((ex, i) => (
               <div className="input-row" key={ex.id} style={{marginBottom:'10px'}}>
-                <input style={{flex:2}} placeholder="Reason (e.g. Tea, Repairs)" value={ex.title} onChange={e => {
+                <input style={{flex:2}} placeholder="Reason" value={ex.title} onChange={e => {
                   const ne = [...entry.expenses]; ne[i].title = e.target.value; setEntry({...entry, expenses: ne});
                 }} />
                 <input style={{flex:1}} type="number" placeholder="Amount" value={ex.amount} onChange={e => {
@@ -204,7 +203,7 @@ export default function App() {
             <h2 className="report-title">Day Sheet Audit Report</h2>
             
             <div className="report-section">
-              <h3>⛽ Meter Sales Split-up</h3>
+              <h3>⛽ Meter Sales (Opening - Closing)</h3>
               {calc.fuelDetails.map(f => (
                 <div key={f.type} className="report-item-box">
                   <div className="item-head"><strong>{f.type}</strong> <span>Rate: ₹{f.rate}</span></div>
@@ -245,7 +244,7 @@ export default function App() {
             )}
 
             <div className="final-box">
-              <label>Net Cash to Handover to Office</label>
+              <label>Net Cash to Handover</label>
               <div className="amount">{money(calc.bankable)}</div>
             </div>
 
