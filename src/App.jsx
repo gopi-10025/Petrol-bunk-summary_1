@@ -12,16 +12,26 @@ export default function App() {
 
   useEffect(() => {
     const saved = localStorage.getItem(`sai_hanuma_${date}`);
-    if (saved) setEntry(JSON.parse(saved));
-    else setEntry({
-      fuels: [
-        { type: 'Petrol', rate: '', pumps: [{ id: id(), name: 'P1', opening: '', closing: '' }] },
-        { type: 'Diesel', rate: '', pumps: [{ id: id(), name: 'D1', opening: '', closing: '' }] }
-      ],
-      cash: [500, 200, 100, 50, 20, 10].map(v => ({ v, count: '' })),
-      upi: '', card: '', bank: '', credit: '', twoT: '', kata: '',
-      expenses: []
-    });
+    if (saved) {
+      setEntry(JSON.parse(saved));
+    } else {
+      setEntry({
+        fuels: [
+          { type: 'Petrol', rate: '', pumps: [{ id: id(), name: 'P1', opening: '', closing: '' }] },
+          { type: 'Diesel', rate: '', pumps: [{ id: id(), name: 'D1', opening: '', closing: '' }] }
+        ],
+        cashManual: '', // New independent cash input
+        cash: [500, 200, 100, 50, 20, 10].map(v => ({ v, count: '' })),
+        upi: '',
+        card: '',
+        bank: '',
+        credit: '',
+        twoT: '',
+        oil2040: '', // New 20-40 Oil entry
+        kata: '',
+        expenses: []
+      });
+    }
   }, [date]);
 
   useEffect(() => {
@@ -30,10 +40,9 @@ export default function App() {
 
   const calc = useMemo(() => {
     if (!entry) return {};
-    
+
     const fuelDetails = entry.fuels.map(f => {
       const pumps = f.pumps.map(p => {
-        // UPDATED LOGIC: Opening - Closing for Countdown Meters
         const liters = Math.max(0, n(p.opening) - n(p.closing));
         return { ...p, liters, amt: liters * n(f.rate) };
       });
@@ -43,17 +52,30 @@ export default function App() {
     });
 
     const totalMeterSales = fuelDetails.reduce((s, f) => s + f.totalAmt, 0);
-    const totalExpected = totalMeterSales + n(entry.twoT) + n(entry.kata);
-    const cashTotal = entry.cash.reduce((s, d) => s + (d.v * n(d.count)), 0);
+    // Added oil2040 to expected sales
+    const totalExpected = totalMeterSales + n(entry.twoT) + n(entry.oil2040) + n(entry.kata);
+    
+    // Denominations are independent now
+    const denomTotal = entry.cash.reduce((s, d) => s + (d.v * n(d.count)), 0);
+    
+    // Reports now use cashManual instead of denomTotal
+    const cashTotal = n(entry.cashManual);
     const digitalTotal = n(entry.upi) + n(entry.card) + n(entry.bank) + n(entry.credit);
     const totalReceived = cashTotal + digitalTotal;
-    const expTotal = entry.expenses.reduce((s, e) => s + n(e.amount), 0);
     
-    return { 
-      fuelDetails, totalMeterSales, totalExpected, 
-      cashTotal, digitalTotal, totalReceived, 
-      gap: totalReceived - totalExpected, 
-      expTotal, bankable: cashTotal - expTotal 
+    const expTotal = entry.expenses.reduce((s, e) => s + n(e.amount), 0);
+
+    return {
+      fuelDetails,
+      totalMeterSales,
+      totalExpected,
+      denomTotal,
+      cashTotal,
+      digitalTotal,
+      totalReceived,
+      gap: totalReceived - totalExpected,
+      expTotal,
+      bankable: cashTotal - expTotal
     };
   }, [entry]);
 
@@ -118,11 +140,12 @@ export default function App() {
                   <div className="rate-box">
                     <label>Rate (₹)</label>
                     <input type="number" step="0.01" value={f.rate} onChange={e => {
-                      const nf = [...entry.fuels]; nf[fi].rate = e.target.value; setEntry({...entry, fuels: nf});
-                    }}/>
+                      const nf = [...entry.fuels];
+                      nf[fi].rate = e.target.value;
+                      setEntry({ ...entry, fuels: nf });
+                    }} />
                   </div>
                 </div>
-
                 {f.pumps.map((p, pi) => {
                   const liters = Math.max(0, n(p.opening) - n(p.closing));
                   const amt = liters * n(f.rate);
@@ -146,12 +169,13 @@ export default function App() {
                 <button className="btn-add-pump" onClick={() => addPump(fi)}>+ Add {f.type} Nozzle</button>
               </div>
             ))}
-            
+
             <div className="card">
               <h2>Miscellaneous Sales</h2>
               <div className="input-row">
-                <div><label>2T Oil</label><input type="number" value={entry.twoT} onChange={e => setEntry({...entry, twoT: e.target.value})}/></div>
-                <div><label>Lorry Kata</label><input type="number" value={entry.kata} onChange={e => setEntry({...entry, kata: e.target.value})}/></div>
+                <div><label>2T Oil</label><input type="number" value={entry.twoT} onChange={e => setEntry({ ...entry, twoT: e.target.value })} /></div>
+                <div><label>20-40 Oil</label><input type="number" value={entry.oil2040} onChange={e => setEntry({ ...entry, oil2040: e.target.value })} /></div>
+                <div><label>Lorry Kata</label><input type="number" value={entry.kata} onChange={e => setEntry({ ...entry, kata: e.target.value })} /></div>
               </div>
             </div>
           </>
@@ -159,21 +183,34 @@ export default function App() {
 
         {tab === 'cash' && (
           <div className="card">
-            <h2>Collection Details</h2>
+            <div className="card-header-row">
+              <h2>Denominations</h2>
+              <div className="denom-total-box">Total: <b>{money(calc.denomTotal)}</b></div>
+            </div>
             {entry.cash.map((d, i) => (
               <div key={d.v} className="cash-row-ui">
                 <span className="denom">₹{d.v}</span>
                 <input type="number" placeholder="Count" value={d.count} onChange={e => {
-                  const nc = [...entry.cash]; nc[i].count = e.target.value; setEntry({...entry, cash: nc});
+                  const nc = [...entry.cash];
+                  nc[i].count = e.target.value;
+                  setEntry({ ...entry, cash: nc });
                 }} />
                 <span className="val">{money(d.v * n(d.count))}</span>
               </div>
             ))}
+            
+            <hr style={{margin: '20px 0', opacity: 0.2}} />
+            
+            <h2>Collection Details</h2>
             <div className="payment-grid">
-               <div><label>UPI / G-Pay</label><input type="number" value={entry.upi} onChange={e => setEntry({...entry, upi: e.target.value})}/></div>
-               <div><label>Card Swipe</label><input type="number" value={entry.card} onChange={e => setEntry({...entry, card: e.target.value})}/></div>
-               <div><label>Bank Deposit</label><input type="number" value={entry.bank} onChange={e => setEntry({...entry, bank: e.target.value})}/></div>
-               <div><label>Credit/Other</label><input type="number" value={entry.credit} onChange={e => setEntry({...entry, credit: e.target.value})}/></div>
+              <div style={{background: '#e3f2fd', padding: '10px', borderRadius: '8px'}}>
+                <label><b>Physical Cash</b></label>
+                <input type="number" value={entry.cashManual} onChange={e => setEntry({ ...entry, cashManual: e.target.value })} placeholder="Enter total cash" />
+              </div>
+              <div><label>UPI / G-Pay</label><input type="number" value={entry.upi} onChange={e => setEntry({ ...entry, upi: e.target.value })} /></div>
+              <div><label>Card Swipe</label><input type="number" value={entry.card} onChange={e => setEntry({ ...entry, card: e.target.value })} /></div>
+              <div><label>Bank Deposit</label><input type="number" value={entry.bank} onChange={e => setEntry({ ...entry, bank: e.target.value })} /></div>
+              <div><label>Credit/Other</label><input type="number" value={entry.credit} onChange={e => setEntry({ ...entry, credit: e.target.value })} /></div>
             </div>
           </div>
         )}
@@ -182,26 +219,27 @@ export default function App() {
           <div className="card">
             <h2>Station Expenses</h2>
             {entry.expenses.map((ex, i) => (
-              <div className="input-row" key={ex.id} style={{marginBottom:'10px'}}>
-                <input style={{flex:2}} placeholder="Reason" value={ex.title} onChange={e => {
-                  const ne = [...entry.expenses]; ne[i].title = e.target.value; setEntry({...entry, expenses: ne});
+              <div className="input-row" key={ex.id} style={{ marginBottom: '10px' }}>
+                <input style={{ flex: 2 }} placeholder="Reason" value={ex.title} onChange={e => {
+                  const ne = [...entry.expenses];
+                  ne[i].title = e.target.value;
+                  setEntry({ ...entry, expenses: ne });
                 }} />
-                <input style={{flex:1}} type="number" placeholder="Amount" value={ex.amount} onChange={e => {
-                  const ne = [...entry.expenses]; ne[i].amount = e.target.value; setEntry({...entry, expenses: ne});
+                <input style={{ flex: 1 }} type="number" placeholder="Amount" value={ex.amount} onChange={e => {
+                  const ne = [...entry.expenses];
+                  ne[i].amount = e.target.value;
+                  setEntry({ ...entry, expenses: ne });
                 }} />
-                <button className="btn-del" onClick={() => setEntry({...entry, expenses: entry.expenses.filter((_, idx) => idx !== i)})}>✕</button>
+                <button className="btn-del" onClick={() => setEntry({ ...entry, expenses: entry.expenses.filter((_, idx) => idx !== i) })}>✕</button>
               </div>
             ))}
-            <button className="btn-add-pump" onClick={() => setEntry({...entry, expenses: [...entry.expenses, {id: id(), title: '', amount: ''}]})}>
-              + Add Expense Line
-            </button>
+            <button className="btn-add-pump" onClick={() => setEntry({ ...entry, expenses: [...entry.expenses, { id: id(), title: '', amount: '' }] })}> + Add Expense Line </button>
           </div>
         )}
 
         {tab === 'report' && (
           <div className="card report-view">
             <h2 className="report-title no-print">Day Sheet Audit Report</h2>
-            
             <div className="report-section">
               <h3>⛽ Meter Sales (Opening - Closing)</h3>
               {calc.fuelDetails.map(f => (
@@ -213,14 +251,16 @@ export default function App() {
                       <span>{money(p.amt)}</span>
                     </div>
                   ))}
-                  {/* Fixed Spacing by wrapping items in span */}
                   <div className="item-subtotal">
                     <span>Total {f.type}: {f.totalLiters.toFixed(2)} L</span>
                     <span>{money(f.totalAmt)}</span>
                   </div>
                 </div>
               ))}
-              <div className="report-item"><span>Miscellaneous (2T Oil & Kata)</span><span>{money(n(entry.twoT) + n(entry.kata))}</span></div>
+              <div className="report-item">
+                <span>Misc (2T, 20-40, Kata)</span>
+                <span>{money(n(entry.twoT) + n(entry.oil2040) + n(entry.kata))}</span>
+              </div>
               <div className="report-total"><span>Total Expected Sales</span><span>{money(calc.totalExpected)}</span></div>
             </div>
 
@@ -241,7 +281,7 @@ export default function App() {
               <div className="report-section">
                 <h3>💸 Itemized Expenses</h3>
                 {entry.expenses.map(e => (
-                  <div key={e.id} className="report-item"><span>{e.title || 'General Expense'}</span><span style={{color:'red'}}>- {money(e.amount)}</span></div>
+                  <div key={e.id} className="report-item"><span>{e.title || 'General Expense'}</span><span style={{ color: 'red' }}>- {money(e.amount)}</span></div>
                 ))}
                 <div className="report-total"><span>Total Expenses</span><span>{money(calc.expTotal)}</span></div>
               </div>
@@ -252,22 +292,21 @@ export default function App() {
               <div className="amount">{money(calc.bankable)}</div>
             </div>
 
-            {/* Replaced absolute floating button with a structured actions section */}
             <div className="action-buttons no-print">
-               <button className="btn-pdf" onClick={() => setTimeout(() => window.print(), 500)}>📄 Download PDF</button>
-               <button className="btn-whatsapp" onClick={() => {
-                  const txt = `*⛽ SAI HANUMA FILLING STATION*\n*Day Sheet: ${date}*\n\n` +
-                    `*--- METER SALES ---*\n` +
-                    `Petrol: ${calc.fuelDetails[0].totalLiters.toFixed(2)} L\n` +
-                    `Diesel: ${calc.fuelDetails[1].totalLiters.toFixed(2)} L\n` +
-                    `*Total Sales: ${money(calc.totalExpected)}*\n\n` +
-                    `*--- COLLECTIONS ---*\n` +
-                    `Cash: ${money(calc.cashTotal)}\n` +
-                    `Digital/Other: ${money(calc.digitalTotal)}\n` +
-                    `*Gap:* ${calc.gap >= 0 ? 'Excess' : 'Shortage'} ${money(calc.gap)}\n\n` +
-                    `*🏦 NET HANDOVER: ${money(calc.bankable)}*`;
-                  window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
-               }}>📤 Send WhatsApp Day-Sheet</button>
+              <button className="btn-pdf" onClick={() => setTimeout(() => window.print(), 500)}>📄 Download PDF</button>
+              <button className="btn-whatsapp" onClick={() => {
+                const txt = `*⛽ SAI HANUMA FILLING STATION*\n*Day Sheet: ${date}*\n\n` +
+                  `*--- METER SALES ---*\n` +
+                  `Petrol: ${calc.fuelDetails[0].totalLiters.toFixed(2)} L\n` +
+                  `Diesel: ${calc.fuelDetails[1].totalLiters.toFixed(2)} L\n` +
+                  `*Total Sales: ${money(calc.totalExpected)}*\n\n` +
+                  `*--- COLLECTIONS ---*\n` +
+                  `Cash: ${money(calc.cashTotal)}\n` +
+                  `Digital/Other: ${money(calc.digitalTotal)}\n` +
+                  `*Gap:* ${calc.gap >= 0 ? 'Excess' : 'Shortage'} ${money(calc.gap)}\n\n` +
+                  `*🏦 NET HANDOVER: ${money(calc.bankable)}*`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
+              }}>📤 Send WhatsApp Day-Sheet</button>
             </div>
           </div>
         )}
