@@ -15,19 +15,34 @@ export default function App() {
     if (saved) {
       setEntry(JSON.parse(saved));
     } else {
+      // DEFAULT STATE: 2 Petrol and 2 Diesel Nozzles
       setEntry({
         fuels: [
-          { type: 'Petrol', rate: '', pumps: [{ id: id(), name: 'P1', opening: '', closing: '' }] },
-          { type: 'Diesel', rate: '', pumps: [{ id: id(), name: 'D1', opening: '', closing: '' }] }
+          { 
+            type: 'Petrol', 
+            rate: '', 
+            pumps: [
+              { id: id(), name: 'P1', opening: '', closing: '' },
+              { id: id(), name: 'P2', opening: '', closing: '' }
+            ] 
+          },
+          { 
+            type: 'Diesel', 
+            rate: '', 
+            pumps: [
+              { id: id(), name: 'D1', opening: '', closing: '' },
+              { id: id(), name: 'D2', opening: '', closing: '' }
+            ] 
+          }
         ],
-        cashManual: '', // New independent cash input
+        cashManual: '',
         cash: [500, 200, 100, 50, 20, 10].map(v => ({ v, count: '' })),
         upi: '',
         card: '',
         bank: '',
         credit: '',
         twoT: '',
-        oil2040: '', // New 20-40 Oil entry
+        oil2040: '',
         kata: '',
         expenses: []
       });
@@ -52,30 +67,18 @@ export default function App() {
     });
 
     const totalMeterSales = fuelDetails.reduce((s, f) => s + f.totalAmt, 0);
-    // Added oil2040 to expected sales
     const totalExpected = totalMeterSales + n(entry.twoT) + n(entry.oil2040) + n(entry.kata);
-    
-    // Denominations are independent now
     const denomTotal = entry.cash.reduce((s, d) => s + (d.v * n(d.count)), 0);
-    
-    // Reports now use cashManual instead of denomTotal
     const cashTotal = n(entry.cashManual);
     const digitalTotal = n(entry.upi) + n(entry.card) + n(entry.bank) + n(entry.credit);
     const totalReceived = cashTotal + digitalTotal;
-    
     const expTotal = entry.expenses.reduce((s, e) => s + n(e.amount), 0);
 
     return {
-      fuelDetails,
-      totalMeterSales,
-      totalExpected,
-      denomTotal,
-      cashTotal,
-      digitalTotal,
-      totalReceived,
+      fuelDetails, totalMeterSales, totalExpected, denomTotal,
+      cashTotal, digitalTotal, totalReceived,
       gap: totalReceived - totalExpected,
-      expTotal,
-      bankable: cashTotal - expTotal
+      expTotal, bankable: cashTotal - expTotal
     };
   }, [entry]);
 
@@ -198,9 +201,7 @@ export default function App() {
                 <span className="val">{money(d.v * n(d.count))}</span>
               </div>
             ))}
-            
             <hr style={{margin: '20px 0', opacity: 0.2}} />
-            
             <h2>Collection Details</h2>
             <div className="payment-grid">
               <div style={{background: '#e3f2fd', padding: '10px', borderRadius: '8px'}}>
@@ -241,7 +242,7 @@ export default function App() {
           <div className="card report-view">
             <h2 className="report-title no-print">Day Sheet Audit Report</h2>
             <div className="report-section">
-              <h3>⛽ Meter Sales (Opening - Closing)</h3>
+              <h3>⛽ Meter Sales</h3>
               {calc.fuelDetails.map(f => (
                 <div key={f.type} className="report-item-box">
                   <div className="item-head"><strong>{f.type}</strong> <span>Rate: ₹{f.rate}</span></div>
